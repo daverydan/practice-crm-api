@@ -2,7 +2,7 @@
 
 use App\Models\Company;
 
-use function Pest\Laravel\{actingAs, getJson, deleteJson};
+use function Pest\Laravel\{actingAs, getJson, postJson, deleteJson};
 
 test('companies index', function () {
     $companies = Company::factory()->times(3)->create();
@@ -21,6 +21,16 @@ test('show company', function () {
 
     $response
         ->assertOk()
+        ->assertJson(['data' => $company->toArray()]);
+})->group('companies');
+
+test('store company', function () {
+    $company = Company::factory()->make();
+
+    $response = postJson(route('companies.store', $company->toArray()));
+
+    $response
+        ->assertCreated()
         ->assertJson(['data' => $company->toArray()]);
 })->group('companies');
 

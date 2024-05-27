@@ -23,7 +23,7 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return new CompanyResource(Company::create($request->all()));
     }
 
     /**
