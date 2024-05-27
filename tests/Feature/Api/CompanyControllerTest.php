@@ -1,7 +1,9 @@
 <?php
 
-test('can get all companies', function () {
-    $response = $this->getJson(route('companies.index', $companies = [
+use function Pest\Laravel\{actingAs, getJson};
+
+test('companies index', function () {
+    $response = getJson(route('companies.index', $companies = [
         'data' => [
             'company 1',
             'company 2',
