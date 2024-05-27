@@ -3,7 +3,8 @@
 use App\Models\Company;
 use App\Models\User;
 
-use function Pest\Laravel\{actingAs, getJson, postJson, deleteJson};
+use function Pest\Laravel\{actingAs, getJson, postJson, patchJson, deleteJson};
+use function Pest\Faker\fake;
 
 test('companies index', function () {
     $companies = Company::factory()->times(3)->create();
@@ -48,6 +49,18 @@ test('store company', function () {
 
     $response
         ->assertCreated()
+        ->assertJson(['data' => $company->toArray()]);
+})->group('companies');
+
+test('update company', function () {
+    $user = User::factory()->create();
+    $company = Company::factory()->for($user)->create();
+    $company->name = fake()->company;
+
+    $response = patchJson(route('companies.update', $company), $company->toArray());
+
+    $response
+        ->assertOk()
         ->assertJson(['data' => $company->toArray()]);
 })->group('companies');
 

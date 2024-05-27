@@ -7,7 +7,6 @@ use App\Http\Requests\CompanyRequest;
 use App\Http\Resources\CompanyCollection;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
-use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
@@ -38,9 +37,10 @@ class CompanyController extends Controller
     /**
      * Update the specified company in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CompanyRequest $request, Company $company)
     {
-        //
+        $company->update($request->validated());
+        return new CompanyResource($company);
     }
 
     /**
