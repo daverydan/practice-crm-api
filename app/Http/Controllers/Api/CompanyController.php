@@ -45,8 +45,8 @@ class CompanyController extends Controller
     /**
      * Remove the specified company from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Company $company)
     {
-        //
+        return response()->json(['success' => $company->delete()]);
     }
 }
