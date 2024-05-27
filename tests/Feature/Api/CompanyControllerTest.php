@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Company;
+use App\Models\User;
 
 use function Pest\Laravel\{actingAs, getJson, postJson, deleteJson};
 
@@ -24,8 +25,24 @@ test('show company', function () {
         ->assertJson(['data' => $company->toArray()]);
 })->group('companies');
 
+test('store company validation', function () {
+    $user = User::factory()->create();
+    $company = Company::factory()->make([
+        'user_id' => $user->id,
+    ]);
+
+    $response = postJson(route('companies.store', collect($company)->except('name')->toArray()));
+
+    $response
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['name' => 'required']);
+})->group('companies');
+
 test('store company', function () {
-    $company = Company::factory()->make();
+    $user = User::factory()->create();
+    $company = Company::factory()->make([
+        'user_id' => $user->id,
+    ]);
 
     $response = postJson(route('companies.store', $company->toArray()));
 
