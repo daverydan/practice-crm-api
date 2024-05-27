@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CompanyCollection;
 use App\Models\Company;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        return response()->json(['data' => Company::all()]);
+        return new CompanyCollection(Company::paginate());
     }
 
     /**
