@@ -13,3 +13,13 @@ test('companies index', function () {
         ->assertOk()
         ->assertJson(['data' => $companies->toArray()]);
 })->group('companies');
+
+test('companies show', function () {
+    $company = Company::factory()->create();
+
+    $response = getJson(route('companies.show', $company));
+
+    $response
+        ->assertOk()
+        ->assertJson(['data' => $company->toArray()]);
+})->group('companies');

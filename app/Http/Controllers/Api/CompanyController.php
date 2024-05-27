@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CompanyCollection;
+use App\Http\Resources\CompanyResource;
 use App\Models\Company;
 use Illuminate\Http\Request;
 
@@ -28,9 +29,9 @@ class CompanyController extends Controller
     /**
      * Display the specified company.
      */
-    public function show(string $id)
+    public function show(Company $company)
     {
-        //
+        return new CompanyResource($company);
     }
 
     /**
