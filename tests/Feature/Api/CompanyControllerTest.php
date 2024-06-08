@@ -98,11 +98,11 @@ test('delete company', function () {
 
 test('only owners can update their company', function () {
     $companyOwner = User::factory()->create();
-    $maliciousUser = User::factory()->create();
+    $otherUser = User::factory()->create();
     $company = Company::factory()->for($companyOwner)->create();
-    $company->user_id = $maliciousUser->id;
+    $company->user_id = $otherUser->id;
 
-    $response = actingAs($maliciousUser)
+    $response = actingAs($otherUser)
         ->patchJson(route('companies.update', $company), $company->toArray());
 
     $response->assertForbidden();
@@ -110,10 +110,10 @@ test('only owners can update their company', function () {
 
 test('only owners can delete their company', function () {
     $companyOwner = User::factory()->create();
-    $maliciousUser = User::factory()->create();
+    $otherUser = User::factory()->create();
     $company = Company::factory()->for($companyOwner)->create();
 
-    $response = actingAs($maliciousUser)
+    $response = actingAs($otherUser)
         ->deleteJson(route('companies.destroy', $company));
 
     $response->assertForbidden();
