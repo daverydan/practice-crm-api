@@ -7,9 +7,15 @@ use App\Http\Requests\CompanyRequest;
 use App\Http\Resources\CompanyCollection;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
+use Illuminate\Support\Facades\Gate;
 
 class CompanyController extends Controller
 {
+    public function __construct()
+    {
+        abort_unless(auth()->check(), 403);
+    }
+
     /**
      * Display a listing of the companies.
      */
@@ -39,6 +45,7 @@ class CompanyController extends Controller
      */
     public function update(CompanyRequest $request, Company $company)
     {
+        Gate::authorize('update', $company);
         $company->update($request->validated());
         return new CompanyResource($company);
     }
@@ -48,6 +55,7 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
+        Gate::authorize('delete', $company);
         return response()->json(['success' => $company->delete()]);
     }
 }
