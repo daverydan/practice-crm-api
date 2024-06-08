@@ -6,10 +6,29 @@ use App\Models\User;
 use function Pest\Laravel\{actingAs, getJson, postJson, patchJson, deleteJson};
 use function Pest\Faker\fake;
 
-test('companies index', function () {
-    $companies = Company::factory()->times(3)->create();
+test('authorization', function () {
+    $company = Company::factory()->create();
 
     $response = getJson(route('companies.index'));
+    $response->assertForbidden();
+    $response = getJson(route('companies.show', $company));
+    $response->assertForbidden();
+    $response = getJson(route('companies.store', $company));
+    $response->assertForbidden();
+    $response = getJson(route('companies.store', $company));
+    $response->assertForbidden();
+    $response = getJson(route('companies.update', $company));
+    $response->assertForbidden();
+    $response = getJson(route('companies.destroy', $company));
+    $response->assertForbidden();
+})->group('companies');
+
+test('companies index', function () {
+    $user = User::factory()->create();
+    $companies = Company::factory()->for($user)->times(3)->create();
+
+    $response = actingAs($user)
+        ->getJson(route('companies.index'));
 
     $response
         ->assertOk()
@@ -17,9 +36,10 @@ test('companies index', function () {
 })->group('companies');
 
 test('show company', function () {
-    $company = Company::factory()->create();
+    $user = User::factory()->create();
+    $company = Company::factory()->for($user)->create();
 
-    $response = getJson(route('companies.show', $company));
+    $response = actingAs($user)->getJson(route('companies.show', $company));
 
     $response
         ->assertOk()
@@ -28,11 +48,10 @@ test('show company', function () {
 
 test('store company validation', function () {
     $user = User::factory()->create();
-    $company = Company::factory()->make([
-        'user_id' => $user->id,
-    ]);
+    $company = Company::factory()->for($user)->make();
 
-    $response = postJson(route('companies.store', collect($company)->except('name')->toArray()));
+    $response = actingAs($user)
+        ->postJson(route('companies.store', collect($company)->except('name')->toArray()));
 
     $response
         ->assertUnprocessable()
@@ -41,11 +60,10 @@ test('store company validation', function () {
 
 test('store company', function () {
     $user = User::factory()->create();
-    $company = Company::factory()->make([
-        'user_id' => $user->id,
-    ]);
+    $company = Company::factory()->for($user)->make();
 
-    $response = postJson(route('companies.store', $company->toArray()));
+    $response = actingAs($user)
+        ->postJson(route('companies.store', $company->toArray()));
 
     $response
         ->assertCreated()
@@ -57,7 +75,8 @@ test('update company', function () {
     $company = Company::factory()->for($user)->create();
     $company->name = fake()->company;
 
-    $response = patchJson(route('companies.update', $company), $company->toArray());
+    $response = actingAs($user)
+        ->patchJson(route('companies.update', $company), $company->toArray());
 
     $response
         ->assertOk()
@@ -65,11 +84,25 @@ test('update company', function () {
 })->group('companies');
 
 test('delete company', function () {
-    $company = Company::factory()->create();
+    $user = User::factory()->create();
+    $company = Company::factory()->for($user)->create();
 
-    $response = deleteJson(route('companies.destroy', $company));
+    $response = actingAs($user)
+        ->deleteJson(route('companies.destroy', $company));
 
     $response
         ->assertOk()
         ->assertJson(['success' => true]);
+})->group('companies');
+
+test('only owners can update their company', function () {
+    $companyOwner = User::factory()->create();
+    $maliciousUser = User::factory()->create();
+    $company = Company::factory()->for($companyOwner)->create();
+    $company->user_id = $maliciousUser->id;
+
+    $response = actingAs($maliciousUser)
+        ->patchJson(route('companies.update', $company), $company->toArray());
+
+    $response->assertForbidden();
 })->group('companies');
