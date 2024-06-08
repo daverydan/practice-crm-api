@@ -10,17 +10,17 @@ test('authorization', function () {
     $company = Company::factory()->create();
 
     $response = getJson(route('companies.index'));
-    $response->assertForbidden();
+    $response->assertUnauthorized();
     $response = getJson(route('companies.show', $company));
-    $response->assertForbidden();
+    $response->assertUnauthorized();
     $response = getJson(route('companies.store', $company));
-    $response->assertForbidden();
+    $response->assertUnauthorized();
     $response = getJson(route('companies.store', $company));
-    $response->assertForbidden();
+    $response->assertUnauthorized();
     $response = getJson(route('companies.update', $company));
-    $response->assertForbidden();
+    $response->assertUnauthorized();
     $response = getJson(route('companies.destroy', $company));
-    $response->assertForbidden();
+    $response->assertUnauthorized();
 })->group('companies');
 
 test('companies index', function () {

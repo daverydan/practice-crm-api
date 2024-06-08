@@ -11,11 +11,6 @@ use Illuminate\Support\Facades\Gate;
 
 class CompanyController extends Controller
 {
-    public function __construct()
-    {
-        abort_unless(auth()->check(), 403);
-    }
-
     /**
      * Display a listing of the companies.
      */
