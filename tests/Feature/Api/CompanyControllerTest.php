@@ -3,8 +3,9 @@
 use App\Models\Company;
 use App\Models\User;
 
-use function Pest\Laravel\{actingAs, getJson, postJson, patchJson, deleteJson};
 use function Pest\Faker\fake;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\getJson;
 
 test('authorization', function () {
     $company = Company::factory()->create();

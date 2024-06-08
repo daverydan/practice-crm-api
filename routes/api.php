@@ -11,5 +11,5 @@ Route::get('/user', function (Request $request) {
 Route::prefix('v1')
     ->middleware('auth:sanctum')
     ->group(function () {
-    Route::apiResource('companies', CompanyController::class);
-});
+        Route::apiResource('companies', CompanyController::class);
+    });

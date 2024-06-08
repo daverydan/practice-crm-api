@@ -42,6 +42,7 @@ class CompanyController extends Controller
     {
         Gate::authorize('update', $company);
         $company->update($request->validated());
+
         return new CompanyResource($company);
     }
 
@@ -51,6 +52,7 @@ class CompanyController extends Controller
     public function destroy(Company $company)
     {
         Gate::authorize('delete', $company);
+
         return response()->json(['success' => $company->delete()]);
     }
 }
